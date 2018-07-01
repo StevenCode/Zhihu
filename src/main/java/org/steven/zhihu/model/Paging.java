@@ -1,6 +1,11 @@
 package org.steven.zhihu.model;
 
+
+
+
 public class Paging {
+    private Integer id;
+
     private boolean is_end;
     private String next;
     private String previous;
