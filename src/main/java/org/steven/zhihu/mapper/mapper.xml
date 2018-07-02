@@ -6,4 +6,10 @@
     <insert id="addPaging" parameterType="org.steven.zhihu.model.Paging" useGeneratedKeys="true" keyProperty="id">
         insert into paging(is_end,next,previous) values(#{is_end},#{next},#{previous})
     </insert>
+
+
+    <insert id="addTable" parameterType="org.steven.zhihu.model.Table" >
+        insert into zhihu(seq,id,verb,action_text,created_time,excerpt,url,title,question_excerpt,answer_count)
+        values(#{seq},#{id},#{verb},#{action_text},#{created_time},#{excerpt},#{url},#{title},#{question_excerpt},#{answer_count})
+    </insert>
 </mapper>
