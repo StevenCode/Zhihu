@@ -3,10 +3,19 @@ package org.steven.zhihu.model;
 public class Target {
     private String excerpt;
     private String url;
+    private String title;
     private Question question;
 
     public String getExcerpt() {
         return excerpt;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public void setExcerpt(String excerpt) {

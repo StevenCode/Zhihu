@@ -23,11 +23,12 @@ public class Constants {
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.115 Safari/537.36"
     };
 
-    public final static long TIME_INTERVAL = 1000;
+    public final static long TIME_INTERVAL = 2000;
     public final static String INDEX_URL = "https://www.zhihu.com";
     public final static String USER_FOLLOWEES_URL = "https://www.zhihu.com/api/v4/members/excited-vczh/activities?limit=7&after_id=1530072364&desktop=True";
+    public final static String DETAIL_URL = "https://www.zhihu" +
+            ".com/api/v4/members/excited-vczh/activities?limit=7&after_id=%s&desktop=True";
 
-    public static final BlockingQueue<String> urlQueue = new LinkedBlockingQueue<String>();
     public static final BlockingQueue<Activities> tableQueue = new LinkedBlockingQueue<Activities>();
     public static ApplicationContext context;
 }

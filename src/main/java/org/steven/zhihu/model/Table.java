@@ -11,12 +11,12 @@ public class Table {
     private String title;
     private String question_excerpt;
     private long answer_count;
-
+    private String date_time;
 
     public Table() {
     }
 
-    public Table(long seq, Data data) {
+    public Table(long seq, Data data, String date_time) {
         this.seq = seq;
         this.id = data.getId();
         this.verb = data.getVerb();
@@ -31,10 +31,20 @@ public class Table {
                 this.title = question.getTitle();
                 this.question_excerpt = question.getExcerpt();
                 this.answer_count = question.getAnswer_count();
+            }else {
+                this.title = target.getTitle();
             }
 
         }
+        this.date_time = date_time;
+    }
 
+    public String getDate_time() {
+        return date_time;
+    }
+
+    public void setDate_time(String date_time) {
+        this.date_time = date_time;
     }
 
     public long getSeq() {

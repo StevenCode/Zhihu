@@ -10,7 +10,15 @@ import org.steven.zhihu.DetailListPageTask;
 import org.steven.zhihu.util.Config;
 import org.steven.zhihu.util.Constants;
 import org.steven.zhihu.util.SimpleThreadPoolExecutor;
+import org.steven.zhihu.util.ThreadPoolMonitor;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -24,6 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ZhiHuHttpClient extends AbstractHttpClient implements IHttpClient{
     private static Logger logger = LoggerFactory.getLogger(ZhiHuHttpClient.class);
     private volatile static ZhiHuHttpClient instance;
+    private static long startTime = System.currentTimeMillis();
     /**
      * 统计用户数量
      */
@@ -69,17 +78,31 @@ public class ZhiHuHttpClient extends AbstractHttpClient implements IHttpClient{
         initHttpClient();
         intiThreadPool();
 
-        BlockingQueue<String> urlQueue = Constants.urlQueue;
-        urlQueue.add(Constants.USER_FOLLOWEES_URL);
-        String url;
-        while ((url = urlQueue.take() )!= null) {
-            System.out.println(url);
-            if (url.equals("empty")) {
-                break;
+        String url ;
+        Calendar instance = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        Date parse = null;
+        try {
+            parse = sdf.parse("20180704");
+            instance.setTime(parse);
+
+            instance.setTime(parse);
+            long currentTime = instance.getTimeInMillis() / 1000;
+            for (int i = 0; i < 1; i++) {
+
+            String currenturl = String.format(Constants.DETAIL_URL, currentTime);
+            HttpGet request = new HttpGet(currenturl);
+            currentTime = currentTime - 86400;
+            detailListPageThreadPool.execute(new DetailListPageTask(request, Config.isProxy,currentTime));
+
             }
-            HttpGet request = new HttpGet(url);
-            detailListPageThreadPool.execute(new DetailListPageTask(request, Config.isProxy));
+
+
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
+
+
 
 
     }
@@ -87,4 +110,6 @@ public class ZhiHuHttpClient extends AbstractHttpClient implements IHttpClient{
     public ThreadPoolExecutor getDetailListPageThreadPool() {
         return detailListPageThreadPool;
     }
+
+
 }

@@ -9,6 +9,15 @@ public class Paging {
     private boolean is_end;
     private String next;
     private String previous;
+    private String current;
+
+    public String getCurrent() {
+        return current;
+    }
+
+    public void setCurrent(String current) {
+        this.current = current;
+    }
 
     public Integer getId() {
         return id;

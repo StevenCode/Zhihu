@@ -20,6 +20,7 @@ public abstract class AbstractPageTask implements Runnable{
 
     protected String url;
     protected HttpRequestBase request;
+    protected long time;
     protected Proxy currentProxy;//当前线程使用的代理
     protected boolean proxyFlag;//是否通过代理下载
     protected static ZhiHuHttpClient zhiHuHttpClient = ZhiHuHttpClient.getInstance();
@@ -28,14 +29,16 @@ public abstract class AbstractPageTask implements Runnable{
     public AbstractPageTask(){
 
     }
-    public AbstractPageTask(String url, boolean proxyFlag){
+    public AbstractPageTask(String url, boolean proxyFlag, long time){
         this.url = url;
         this.proxyFlag = proxyFlag;
+        this.time = time;
     }
 
-    public AbstractPageTask(HttpRequestBase request, boolean proxyFlag){
+    public AbstractPageTask(HttpRequestBase request, boolean proxyFlag, long tim){
         this.request = request;
         this.proxyFlag = proxyFlag;
+        this.time = time;
     }
 
     public void run(){

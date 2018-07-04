@@ -13,6 +13,8 @@ import org.steven.zhihu.model.Table;
 import org.steven.zhihu.service.Service;
 import org.steven.zhihu.util.Constants;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
@@ -52,8 +54,11 @@ public class Main {
                         long l = service.addPagin(activities.getPaging());
 
                         List<Data> datas = activities.getData();
+                        long time = activities.getTime();
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+                        String format = sdf.format(new Date(time * 1000L));
                         for (Data data : datas) {
-                            Table table = new Table(l, data);
+                            Table table = new Table(l, data, format);
                             service.addTable(table);
                         }
                     }

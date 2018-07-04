@@ -16,7 +16,8 @@ import org.steven.zhihu.util.Constants;
 import java.sql.Connection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -32,21 +33,27 @@ public class DetailListPageTask extends AbstractPageTask{
 
 
 
-    public DetailListPageTask(HttpRequestBase request, boolean proxyFlag) {
-        super(request, proxyFlag);
+    public DetailListPageTask(HttpRequestBase request, boolean proxyFlag, long time) {
+        super(request, proxyFlag, time);
     }
 
 
 
     @Override
     protected void retry() {
-        zhiHuHttpClient.getDetailListPageThreadPool().execute(new DetailListPageTask(request, Config.isProxy));
+        zhiHuHttpClient.getDetailListPageThreadPool().execute(new DetailListPageTask(request, Config.isProxy, time));
     }
 
     @Override
     protected void handle(Page page) {
 
         if (page.getStatusCode() != Constants.HTTP_STAUTS_OK) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+
+
+            }
             retry();
             return;
         }
@@ -55,13 +62,32 @@ public class DetailListPageTask extends AbstractPageTask{
 
             Activities activities = JSONObject.parseObject(page.getHtml(), Activities.class);
             Paging paging = activities.getPaging();
+            paging.setCurrent(request.getURI().toURL().toString());
+            activities.setTime(time+84600);
+            activities.setPaging(paging);
             Constants.tableQueue.add(activities);
             if (!paging.isIs_end()) {
-                Constants.urlQueue.add(paging.getNext());
-            }else {
-                Constants.urlQueue.add("empty");
-            }
+                if (time == 0) {
+                    return;
+                }
+                String url = paging.getNext();
 
+                Pattern pattern = Pattern.compile("^http.*after_id=(\\d+).*");
+                Matcher matcher = pattern.matcher(url);
+                if(matcher.find()){
+                    String group = matcher.group(1);
+                    long l = Long.parseLong(group);
+                    if (l < time) {
+                        return;
+                    }
+                    zhiHuHttpClient.getDetailListPageThreadPool().execute(new DetailListPageTask(request, Config.isProxy, time));
+                }else {
+                    System.out.println("not mathch:   "+url);
+                }
+
+
+
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -72,5 +98,6 @@ public class DetailListPageTask extends AbstractPageTask{
     public static Map<Thread, Connection> getConnectionMap() {
         return connectionMap;
     }
+
 
 }

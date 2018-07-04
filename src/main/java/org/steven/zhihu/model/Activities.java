@@ -5,6 +5,15 @@ import java.util.List;
 public class Activities {
     private Paging paging;
     private List<Data> data;
+    private long time;
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
+    }
 
     public List<Data> getData() {
         return data;
