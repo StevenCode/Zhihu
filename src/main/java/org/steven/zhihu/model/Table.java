@@ -22,11 +22,19 @@ public class Table {
         this.verb = data.getVerb();
         this.action_text = data.getAction_text();
         this.created_time = data.getCreated_time();
-        this.excerpt = data.getTarget().getExcerpt();
-        this.url = data.getTarget().getUrl();
-        this.title = data.getTarget().getQuestion().getTitle();
-        this.question_excerpt = data.getTarget().getQuestion().getExcerpt();
-        this.answer_count = data.getTarget().getQuestion().getAnswer_count();
+        Target target = data.getTarget();
+        if (target != null) {
+            this.excerpt = target.getExcerpt();
+            this.url = target.getUrl();
+            Question question = target.getQuestion();
+            if ( question!= null) {
+                this.title = question.getTitle();
+                this.question_excerpt = question.getExcerpt();
+                this.answer_count = question.getAnswer_count();
+            }
+
+        }
+
     }
 
     public long getSeq() {

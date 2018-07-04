@@ -12,10 +12,12 @@ import org.steven.zhihu.model.Table;
 import org.steven.zhihu.service.Service;
 
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         String baseDir = "./conf/";
 
@@ -33,35 +35,46 @@ public class Main {
         //加载spring
         String[] springFiles = new String[]{baseDir + "applicationContext.xml"};
         ApplicationContext context = new FileSystemXmlApplicationContext(springFiles);
+        Constant.context = context;
 
-        Service service = (Service) context.getBean("service");
+        BlockingQueue<String> urlQueue = Constant.urlQueue;
+        urlQueue.add("https://www.zhihu.com/api/v4/members/excited-vczh/activities?limit=7&after_id=1530072364" +
+                "&desktop=True");
+        String url;
+
+        new Thread(new Runnable() {
+            Service service = (Service) Constant.context.getBean("service");
 
 
-        String url = "https://www.zhihu.com/api/v4/members/excited-vczh/activities?limit=7&after_id=1530072364" +
-                "&desktop=True";
-        HttpUtil httpUtil = new HttpUtil();
-        httpUtil.request(url, content -> {
+            @Override
+            public void run() {
+                Activities activities;
+                try {
+                    while ((activities = Constant.tableQueue.take()) != null) {
+                        long l = service.addPagin(activities.getPaging());
 
-
-            try {
-                Activities activities = JSONObject.parseObject(content, Activities.class);
-                Paging paging = activities.getPaging();
-
-                long l = service.addPagin(paging);
-
-                List<Data> datas = activities.getData();
-                for (Data data : datas) {
-                    Table table = new Table(l, data);
-                    service.addTable(table);
+                        List<Data> datas = activities.getData();
+                        for (Data data : datas) {
+                            Table table = new Table(l, data);
+                            service.addTable(table);
+                        }
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
+            }
+        }).start();
 
-            } catch (Exception e) {
-                e.printStackTrace();
+        while ((url = urlQueue.take() )!= null) {
+            System.out.println(url);
+            if (url.equals("empty")) {
+                break;
             }
 
-        });
+            Thread thread = new Thread(new AbstractPageTask(url));
 
-
+            thread.start();
+        }
 
 
 

@@ -10,6 +10,14 @@ public class Paging {
     private String next;
     private String previous;
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public boolean isIs_end() {
         return is_end;
     }

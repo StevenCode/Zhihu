@@ -13,7 +13,8 @@ public class Service {
     public ICommonDao commonDao;
 
     public long addPagin(Paging paging) {
-        return commonDao.addPaging(paging);
+         commonDao.addPaging(paging);
+         return paging.getId();
     }
 
     public void addTable(Table table) {
