@@ -2,11 +2,16 @@ package org.steven.zhihu.httpclient;
 
 
 
+import org.apache.http.client.methods.HttpGet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.steven.zhihu.AbstractPageTask;
+import org.steven.zhihu.DetailListPageTask;
 import org.steven.zhihu.util.Config;
+import org.steven.zhihu.util.Constants;
 import org.steven.zhihu.util.SimpleThreadPoolExecutor;
 
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -22,8 +27,6 @@ public class ZhiHuHttpClient extends AbstractHttpClient implements IHttpClient{
     /**
      * 统计用户数量
      */
-    public static AtomicInteger parseUserCount = new AtomicInteger(0);
-    private static long startTime = System.currentTimeMillis();
     public static volatile boolean isStop = false;
 
     public static ZhiHuHttpClient getInstance(){
@@ -39,13 +42,9 @@ public class ZhiHuHttpClient extends AbstractHttpClient implements IHttpClient{
     /**
      * 详情页下载线程池
      */
-    private ThreadPoolExecutor detailPageThreadPool;
-    /**
-     * 列表页下载线程池
-     */
-    private ThreadPoolExecutor listPageThreadPool;
+    private ThreadPoolExecutor detailListPageThreadPool;
 
-    private static String authorization;
+
     private ZhiHuHttpClient() {
     }
     /**
@@ -57,21 +56,35 @@ public class ZhiHuHttpClient extends AbstractHttpClient implements IHttpClient{
     }
 
     private void intiThreadPool(){
-        detailPageThreadPool = new SimpleThreadPoolExecutor(Config.downloadThreadSize,
+        detailListPageThreadPool = new SimpleThreadPoolExecutor(Config.downloadThreadSize,
                 Config.downloadThreadSize,
                 0L, TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<Runnable>(),
-                "detailPageThreadPool");
+                new LinkedBlockingQueue<Runnable>(2000),
+                new ThreadPoolExecutor.DiscardPolicy(),
+                "detailListPageThreadPool");
     }
 
     @Override
-    public void startCrawl(){
+    public void startCrawl() throws InterruptedException {
         initHttpClient();
         intiThreadPool();
 
-        detailListPageThreadPool.execute(new DetailListPageTask(request, Config.isProxy));
+        BlockingQueue<String> urlQueue = Constants.urlQueue;
+        urlQueue.add(Constants.USER_FOLLOWEES_URL);
+        String url;
+        while ((url = urlQueue.take() )!= null) {
+            System.out.println(url);
+            if (url.equals("empty")) {
+                break;
+            }
+            HttpGet request = new HttpGet(url);
+            detailListPageThreadPool.execute(new DetailListPageTask(request, Config.isProxy));
+        }
+
 
     }
 
-
+    public ThreadPoolExecutor getDetailListPageThreadPool() {
+        return detailListPageThreadPool;
+    }
 }

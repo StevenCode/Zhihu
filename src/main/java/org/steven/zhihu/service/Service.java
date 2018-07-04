@@ -14,7 +14,7 @@ public class Service {
 
     public long addPagin(Paging paging) {
          commonDao.addPaging(paging);
-         return paging.getId();
+        return paging.getId();
     }
 
     public void addTable(Table table) {

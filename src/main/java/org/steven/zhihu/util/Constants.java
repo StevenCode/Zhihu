@@ -1,5 +1,11 @@
 package org.steven.zhihu.util;
 
+import org.springframework.context.ApplicationContext;
+import org.steven.zhihu.model.Activities;
+
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 public class Constants {
     public static final int HTTP_STAUTS_OK = 200;
     public final static int TIMEOUT = 10000;
@@ -19,4 +25,9 @@ public class Constants {
 
     public final static long TIME_INTERVAL = 1000;
     public final static String INDEX_URL = "https://www.zhihu.com";
+    public final static String USER_FOLLOWEES_URL = "https://www.zhihu.com/api/v4/members/excited-vczh/activities?limit=7&after_id=1530072364&desktop=True";
+
+    public static final BlockingQueue<String> urlQueue = new LinkedBlockingQueue<String>();
+    public static final BlockingQueue<Activities> tableQueue = new LinkedBlockingQueue<Activities>();
+    public static ApplicationContext context;
 }

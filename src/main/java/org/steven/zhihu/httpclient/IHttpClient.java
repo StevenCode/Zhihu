@@ -13,5 +13,5 @@ public interface IHttpClient {
     /**
      * 爬虫入口
      */
-    void startCrawl();
+    void startCrawl() throws InterruptedException;
 }

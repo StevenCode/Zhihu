@@ -1,18 +1,19 @@
 package org.steven.zhihu;
 
 
-import com.alibaba.fastjson.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
+import org.steven.zhihu.httpclient.ProxyHttpClient;
+import org.steven.zhihu.httpclient.ZhiHuHttpClient;
 import org.steven.zhihu.model.Activities;
 import org.steven.zhihu.model.Data;
-import org.steven.zhihu.model.Paging;
+
 import org.steven.zhihu.model.Table;
 import org.steven.zhihu.service.Service;
+import org.steven.zhihu.util.Constants;
 
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 
 
@@ -35,22 +36,19 @@ public class Main {
         //加载spring
         String[] springFiles = new String[]{baseDir + "applicationContext.xml"};
         ApplicationContext context = new FileSystemXmlApplicationContext(springFiles);
-        Constant.context = context;
+        Constants.context = context;
 
-        BlockingQueue<String> urlQueue = Constant.urlQueue;
-        urlQueue.add("https://www.zhihu.com/api/v4/members/excited-vczh/activities?limit=7&after_id=1530072364" +
-                "&desktop=True");
-        String url;
 
         new Thread(new Runnable() {
-            Service service = (Service) Constant.context.getBean("service");
+            Service service = (Service) Constants.context.getBean("service");
 
 
             @Override
             public void run() {
                 Activities activities;
                 try {
-                    while ((activities = Constant.tableQueue.take()) != null) {
+                    while ((activities = Constants.tableQueue.take()) != null) {
+
                         long l = service.addPagin(activities.getPaging());
 
                         List<Data> datas = activities.getData();
@@ -65,16 +63,11 @@ public class Main {
             }
         }).start();
 
-        while ((url = urlQueue.take() )!= null) {
-            System.out.println(url);
-            if (url.equals("empty")) {
-                break;
-            }
+        ProxyHttpClient.getInstance().startCrawl();
+        ZhiHuHttpClient.getInstance().startCrawl();
 
-            Thread thread = new Thread(new AbstractPageTask(url));
 
-            thread.start();
-        }
+
 
 
 
