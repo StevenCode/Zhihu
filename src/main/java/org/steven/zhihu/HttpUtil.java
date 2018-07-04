@@ -9,7 +9,7 @@ import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 
-import static org.steven.zhihu.Constant.HTTP_STAUTS_OK;
+import static org.steven.zhihu.util.Constants.HTTP_STAUTS_OK;
 
 public class HttpUtil {
     public void request(String url, IHttpCallback iHttpCallback) {
