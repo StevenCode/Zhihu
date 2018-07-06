@@ -49,7 +49,7 @@ public class DetailListPageTask extends AbstractPageTask{
 
         if (page.getStatusCode() != Constants.HTTP_STAUTS_OK) {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
 
 
@@ -80,7 +80,9 @@ public class DetailListPageTask extends AbstractPageTask{
                     if (l < time) {
                         return;
                     }
-                    zhiHuHttpClient.getDetailListPageThreadPool().execute(new DetailListPageTask(request, Config.isProxy, time));
+                    HttpGet nextRequest = new HttpGet(paging.getNext());
+                    logger.info("paging.getNext():"+paging.getNext());
+                    zhiHuHttpClient.getDetailListPageThreadPool().execute(new DetailListPageTask(nextRequest, Config.isProxy, time));
                 }else {
                     System.out.println("not mathch:   "+url);
                 }
@@ -89,7 +91,15 @@ public class DetailListPageTask extends AbstractPageTask{
 
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(page.getHtml());
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ex) {
+
+            }
+            retry();
+            return;
+
         }
     }
 

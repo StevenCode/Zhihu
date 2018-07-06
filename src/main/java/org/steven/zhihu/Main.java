@@ -10,6 +10,7 @@ import org.steven.zhihu.model.Activities;
 import org.steven.zhihu.model.Data;
 
 import org.steven.zhihu.model.Table;
+import org.steven.zhihu.proxy.ProxyPool;
 import org.steven.zhihu.service.Service;
 import org.steven.zhihu.util.Constants;
 
@@ -41,12 +42,28 @@ public class Main {
         Constants.context = context;
 
 
+        new Thread(() -> {
+
+            while (true) {
+                System.out.println("proxyQueue size:"+ProxyPool.proxyQueue.size());
+                try {
+                    Thread.sleep(10000L);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }).start();
+
         new Thread(new Runnable() {
             Service service = (Service) Constants.context.getBean("service");
 
 
             @Override
             public void run() {
+
+
+
                 Activities activities;
                 try {
                     while ((activities = Constants.tableQueue.take()) != null) {

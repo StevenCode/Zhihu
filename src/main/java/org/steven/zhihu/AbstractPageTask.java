@@ -35,7 +35,7 @@ public abstract class AbstractPageTask implements Runnable{
         this.time = time;
     }
 
-    public AbstractPageTask(HttpRequestBase request, boolean proxyFlag, long tim){
+    public AbstractPageTask(HttpRequestBase request, boolean proxyFlag, long time){
         this.request = request;
         this.proxyFlag = proxyFlag;
         this.time = time;

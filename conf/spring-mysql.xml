@@ -20,7 +20,7 @@
 
    <bean id="mysqlDataSource" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
 	    <property name="DriverClassName" value="com.mysql.jdbc.Driver"/>
-	    <property name="Url" value="jdbc:mysql://localhost:33066/blog?useUnicode=true&amp;characterEncoding=utf8" />
+	    <property name="Url" value="jdbc:mysql://localhost:3306/blog?useUnicode=true&amp;characterEncoding=utf8" />
 	    <property name="Username" value="root" />
 	    <property name="Password" value="123456" />
 	    <property name="InitialSize" value="2" />

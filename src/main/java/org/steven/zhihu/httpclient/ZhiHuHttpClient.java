@@ -88,7 +88,7 @@ public class ZhiHuHttpClient extends AbstractHttpClient implements IHttpClient{
 
             instance.setTime(parse);
             long currentTime = instance.getTimeInMillis() / 1000;
-            for (int i = 0; i < 1; i++) {
+            for (int i = 0; i < 600; i++) {
 
             String currenturl = String.format(Constants.DETAIL_URL, currentTime);
             HttpGet request = new HttpGet(currenturl);
